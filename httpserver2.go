@@ -23,6 +23,7 @@ func index(w http.ResponseWriter, r *http.Request) {
 				fmt.Printf("Header key: %s, Header value: %s \n", k, v)
 				w.Header().Set(k, vv)
 			}
+			io.WriteString(w, fmt.Sprintf("%s=%s\n", k, v))
 		}
 		// 04.记录日志并输出
 		clientip := getCurrentIP(r)
@@ -36,7 +37,7 @@ func index(w http.ResponseWriter, r *http.Request) {
 
 func healthz(w http.ResponseWriter, r *http.Request) {
 
-	fmt.Fprintf(w, "working")
+	fmt.Fprintf(w, "200")
 }
 func getCurrentIP(r *http.Request) string {
 	// 这里也可以通过X-Forwarded-For请求头的第一个值作为用户的ip
