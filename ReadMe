@@ -1,0 +1,1 @@
+nsenter -t 55839 -n ip addr 
