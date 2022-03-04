@@ -1,1 +1,4 @@
+docker build -t httpserver2:v1.0 .
+docker run -d -p 80:81 httpserver2:v1.0 
+docker inspect f6328e127ff7 |grep id 
 nsenter -t 55839 -n ip addr 
