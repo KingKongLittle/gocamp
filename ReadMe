@@ -2,3 +2,47 @@ docker build -t httpserver2:v1.0 .
 docker run -d -p 80:81 httpserver2:v1.0 
 docker inspect f6328e127ff7 |grep id 
 nsenter -t 55839 -n ip addr 
+
+---------------------------
+Sending build context to Docker daemon  9.257MB
+Step 1/9 : FROM golang:1.17 AS builder
+1.17: Pulling from library/golang
+0e29546d541c: Pull complete 
+9b829c73b52b: Pull complete 
+cb5b7ae36172: Pull complete 
+6494e4811622: Pull complete 
+6e1d20a8313e: Pull complete 
+593823f101dc: Pull complete 
+1b4aae56cdbe: Pull complete 
+Digest: sha256:c72fa9afc50b3303e8044cf28fb358b48032a548e1825819420fd40155a131cb
+Status: Downloaded newer image for golang:1.17
+ ---> 276895edf967
+Step 2/9 : ENV GO111MODULE=off     CGO_ENABLED=0     GOOS=linux     GOARCH=amd64
+ ---> Running in b664df4f595c
+Removing intermediate container b664df4f595c
+ ---> c37d590a7391
+Step 3/9 : WORKDIR /build
+ ---> Running in 72b584d2cd7c
+Removing intermediate container 72b584d2cd7c
+ ---> 2633c4c17f7b
+Step 4/9 : COPY . .
+ ---> f8ea2b2d7754
+Step 5/9 : RUN go build -o httpserver2 .
+ ---> Running in 8800abd785ef
+Removing intermediate container 8800abd785ef
+ ---> bb5af623aacb
+Step 6/9 : FROM scratch
+ ---> 
+Step 7/9 : COPY --from=builder /build/httpserver2 /
+ ---> d03908f98cf8
+Step 8/9 : EXPOSE 8080
+ ---> Running in 900c45beb270
+Removing intermediate container 900c45beb270
+ ---> ce7e424a4622
+Step 9/9 : ENTRYPOINT ["/httpserver2"]
+ ---> Running in 07c56a50eaee
+Removing intermediate container 07c56a50eaee
+ ---> c45bba407fe7
+Successfully built c45bba407fe7
+Successfully tagged httpserver2:v1.0
+------------------------------------
