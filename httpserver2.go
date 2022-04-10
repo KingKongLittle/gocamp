@@ -3,6 +3,7 @@ package main
 import (
 	"fmt"
 	"log"
+        "io"
 	"net"
 	"net/http"
 	"net/http/pprof"
