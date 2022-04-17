@@ -10,7 +10,7 @@ spec:
         paths:
           - backend:
               service:
-                name: httpsvc
+                name: httpserver2 
                 port:
                   number: 80
             path: /
