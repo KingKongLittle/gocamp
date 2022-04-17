@@ -5,7 +5,7 @@ metadata:
 spec:
   ingressClassName: nginx
   rules:
-    - host: mod8.51.cafe
+    - host: httpserver2.local.com 
       http:
         paths:
           - backend:
