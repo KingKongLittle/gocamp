@@ -2,13 +2,16 @@ package main
 
 import (
 	"fmt"
+	"gocamp/metrics"
+	"io"
 	"log"
-        "io"
 	"net"
 	"net/http"
 	"net/http/pprof"
 	"os"
 	"strings"
+
+	"github.com/prometheus/client_golang/prometheus/promhttp"
 )
 
 func index(w http.ResponseWriter, r *http.Request) {
@@ -68,7 +71,9 @@ func ClientIP(r *http.Request) string {
 	}
 	return ""
 }
+
 func main() {
+	metrics.Register()
 	mux := http.NewServeMux()
 	// 06. debug   mux.HandleFunc("/debug/pprof/", pprof.Index)
 	mux.HandleFunc("/debug/pprof/profile", pprof.Profile)
@@ -76,6 +81,7 @@ func main() {
 	mux.HandleFunc("/debug/pprof/trace", pprof.Trace)
 	mux.HandleFunc("/", index)
 	mux.HandleFunc("/healthz", healthz)
+	mux.Handle("/metrics", promhttp.Handler())
 	if err := http.ListenAndServe(":8080", mux); err != nil {
 		log.Fatalf("start http server failed, error: %s\n", err.Error())
 
