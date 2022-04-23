@@ -90,6 +90,7 @@ func main() {
 	mux.HandleFunc("/debug/pprof/symbol", pprof.Symbol)
 	mux.HandleFunc("/debug/pprof/trace", pprof.Trace)
 	mux.HandleFunc("/", index)
+	mux.HandleFunc("/images", images)
 	mux.HandleFunc("/healthz", healthz)
 	mux.Handle("/metrics", promhttp.Handler())
 	if err := http.ListenAndServe(":8080", mux); err != nil {
