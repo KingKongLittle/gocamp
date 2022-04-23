@@ -5,11 +5,13 @@ import (
 	"gocamp/metrics"
 	"io"
 	"log"
+	"math/rand"
 	"net"
 	"net/http"
 	"net/http/pprof"
 	"os"
 	"strings"
+	"time"
 
 	"github.com/prometheus/client_golang/prometheus/promhttp"
 )
@@ -70,6 +72,14 @@ func ClientIP(r *http.Request) string {
 		return ip
 	}
 	return ""
+}
+
+func images(w http.ResponseWriter, r *http.Request) {
+	timer := metrics.NewTimer()
+	defer timer.ObserveTotal()
+	randInt := rand.Intn(2000)
+	time.Sleep(time.Millisecond * time.Duration(randInt))
+	w.Write([]byte(fmt.Sprintf("<h1>%d<h1>", randInt)))
 }
 
 func main() {
