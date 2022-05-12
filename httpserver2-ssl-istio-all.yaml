@@ -35,7 +35,6 @@ spec:
   selector:
     app: httpserver2
 ---
-istio-specs-httpsserver2.yaml
 apiVersion: networking.istio.io/v1beta1
 kind: VirtualService
 metadata:
