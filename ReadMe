@@ -1,3 +1,39 @@
+---
+kubectl create ns securesvc
+kubectl label ns securesvc istio-injection=enabled
+
+openssl req -x509 -sha256 -nodes -days 365 -newkey rsa:2048 -subj '/O=local.com./CN=*.local.com' -keyout local.io.key -out local.io.crt
+kubectl create -n istio-system secret tls local-credential --key=local.io.key --cert=local.io.crt
+kubectl apply -f istio-specs.yaml -n securesvc
+
+kubectl create -f httpserver2-ssl-istio-all.yaml -n securesvc
+
+[root@k8s-node-1 ~]# kubectl get svc -nistio-system
+NAME                   TYPE           CLUSTER-IP       EXTERNAL-IP      PORT(S)                                                                      AGE
+istio-egressgateway    ClusterIP      10.110.244.66    <none>           80/TCP,443/TCP                                                               5d22h
+istio-ingressgateway   LoadBalancer   10.100.249.123   172.16.100.142   15021:30709/TCP,80:31080/TCP,443:31197/TCP,31400:31492/TCP,15443:32735/TCP   4d4h
+istiod                 ClusterIP      10.98.117.213    <none>           15010/TCP,15012/TCP,443/TCP,15014/TCP                                        5d22h
+jaeger-collector       ClusterIP      10.97.75.172     <none>           14268/TCP,14250/TCP,9411/TCP                                                 3d1h
+tracing                ClusterIP      10.97.215.170    <none>           80/TCP,16685/TCP                                                             3d1h
+zipkin                 ClusterIP      10.98.66.67      <none>           9411/TCP                                                                     3d1h
+
+[root@k8s-node-1 ~]# curl -H "Host: httpserver2.local.com"  10.100.249.123/simple/hello
+X-Envoy-Peer-Metadata=[ChQKDkFQUF9DT05UQUlORVJTEgIaAAoaCgpDTFVTVEVSX0lEEgwaCkt1YmVybmV0ZXMKGQoNSVNUSU9fVkVSU0lPThIIGgYxLjEyLjIKvwMKBkxBQkVMUxK0AyqxAwodCgNhcHASFhoUaXN0aW8taW5ncmVzc2dhdGV3YXkKEwoFY2hhcnQSChoIZ2F0ZXdheXMKFAoIaGVyaXRhZ2USCBoGVGlsbGVyCjYKKWluc3RhbGwub3BlcmF0b3IuaXN0aW8uaW8vb3duaW5nLXJlc291cmNlEgkaB3Vua25vd24KGQoFaXN0aW8SEBoOaW5ncmVzc2dhdGV3YXkKGQoMaXN0aW8uaW8vcmV2EgkaB2RlZmF1bHQKMAobb3BlcmF0b3IuaXN0aW8uaW8vY29tcG9uZW50EhEaD0luZ3Jlc3NHYXRld2F5cwohChFwb2QtdGVtcGxhdGUtaGFzaBIMGgo3YzhiYzQ3YjQ5ChIKB3JlbGVhc2USBxoFaXN0aW8KOQofc2VydmljZS5pc3Rpby5pby9jYW5vbmljYWwtbmFtZRIWGhRpc3Rpby1pbmdyZXNzZ2F0ZXdheQovCiNzZXJ2aWNlLmlzdGlvLmlvL2Nhbm9uaWNhbC1yZXZpc2lvbhIIGgZsYXRlc3QKIgoXc2lkZWNhci5pc3Rpby5pby9pbmplY3QSBxoFZmFsc2UKGgoHTUVTSF9JRBIPGg1jbHVzdGVyLmxvY2FsCi8KBE5BTUUSJxolaXN0aW8taW5ncmVzc2dhdGV3YXktN2M4YmM0N2I0OS1ncjVncgobCglOQU1FU1BBQ0USDhoMaXN0aW8tc3lzdGVtCl0KBU9XTkVSElQaUmt1YmVybmV0ZXM6Ly9hcGlzL2FwcHMvdjEvbmFtZXNwYWNlcy9pc3Rpby1zeXN0ZW0vZGVwbG95bWVudHMvaXN0aW8taW5ncmVzc2dhdGV3YXkKFwoRUExBVEZPUk1fTUVUQURBVEESAioACicKDVdPUktMT0FEX05BTUUSFhoUaXN0aW8taW5ncmVzc2dhdGV3YXk=]
+X-B3-Traceid=[a5f64bc9cb2dc806f63283625c90199f]
+X-B3-Sampled=[1]
+User-Agent=[curl/7.29.0]
+X-Forwarded-Proto=[http]
+X-Forwarded-For=[172.30.210.81]
+X-Envoy-Internal=[true]
+X-Envoy-Decorator-Operation=[httpserver2.simple.svc.cluster.local:80/simple/hello]
+X-Envoy-Original-Path=[/simple/hello]
+Accept=[*/*]
+X-Envoy-Peer-Metadata-Id=[router~192.168.76.165~istio-ingressgateway-7c8bc47b49-gr5gr.istio-system~istio-system.svc.cluster.local]
+X-B3-Spanid=[f63283625c90199f]
+X-Request-Id=[7deddd02-a364-9c67-b50a-f90047d96c28]
+X-Envoy-Attempt-Count=[1]
+----
+
 docker build -t httpserver2:v1.0 .
 docker run -d -p 80:81 httpserver2:v1.0 
 docker inspect f6328e127ff7 |grep id 
