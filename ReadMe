@@ -4,7 +4,6 @@ kubectl label ns securesvc istio-injection=enabled
 
 openssl req -x509 -sha256 -nodes -days 365 -newkey rsa:2048 -subj '/O=local.com./CN=*.local.com' -keyout local.io.key -out local.io.crt
 kubectl create -n istio-system secret tls local-credential --key=local.io.key --cert=local.io.crt
-kubectl apply -f istio-specs.yaml -n securesvc
 
 kubectl create -f httpserver2-ssl-istio-all.yaml -n securesvc
 
