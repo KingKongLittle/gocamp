@@ -43,7 +43,7 @@ spec:
       steps {
         container('kaniko') {
           sh '/kaniko/executor -f `pwd`/Dockerfile -c `pwd`/src --cache=true \
-          --destination=cloudnative.azurecr.io/httpserver:${DATED_GIT_HASH} \
+          --destination=docker.io/kingkonglittle/httpserver2:${DATED_GIT_HASH} \
                   --insecure \
                   --skip-tls-verify  \
                   -v=debug'
